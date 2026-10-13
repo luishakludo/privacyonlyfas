@@ -127,7 +127,7 @@ export const HOME_DEFAULT: HomeContent = {
     tiktok: "disabled",
   },
   subscriptions: [
-    { id: "1", name: "1 mês", price: "R$ 19,90", badge: "Mais popular" },
+    { id: "1", name: "2 meses", price: "R$ 19,90", badge: "Mais popular" },
     { id: "2", name: "3 meses", price: "R$ 49,90", discount: "-16%" },
     { id: "3", name: "6 meses", price: "R$ 89,90", discount: "-25%" },
   ],
