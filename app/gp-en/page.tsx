@@ -25,6 +25,14 @@ export default async function Page() {
     avatar: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/790059490_18083216771471493_7120741971286687762_n-SLGBqGlxNyssD7kbPz18TJjJrsny9c.jpg",
     coverImage: GP_COVER,
     paymentProvider: "stripe" as const,
+    checkout: {
+      ...source.base.checkout,
+      deliverableEnabled: true,
+      deliverableTitle: "Payment approved!",
+      deliverableDescription: "Your access has been unlocked.",
+      deliverableButtonText: "Access content",
+      deliverableButtonUrl: "https://t.me/+r1wJP767rDA0Mjcx",
+    },
     posts: source.postImages.slice(0, 2).map((post, index) => ({
       ...post,
       url: index === 0 ? GP_POST_IMAGE : GP_POST_VIDEO,

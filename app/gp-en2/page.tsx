@@ -36,6 +36,14 @@ export default async function Page() {
           avatar: BEATRIZ_AVATAR,
           coverImage: GP_COVER,
           paymentProvider: "stripe" as const,
+          checkout: {
+            ...source.base.checkout,
+            deliverableEnabled: true,
+            deliverableTitle: "Payment approved!",
+            deliverableDescription: "Your access has been unlocked.",
+            deliverableButtonText: "Access content",
+            deliverableButtonUrl: "https://t.me/+r1wJP767rDA0Mjcx",
+          },
           posts,
           medias: [],
           subscriptions: source.locales.en.subscriptions.map((subscription) => {

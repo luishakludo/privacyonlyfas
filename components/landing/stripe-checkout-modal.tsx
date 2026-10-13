@@ -126,11 +126,13 @@ function PaymentForm({
   colors,
   plan,
   labels,
+  clientSecret,
   onSuccess,
 }: {
   colors: Colors
   plan: Plan
   labels: StripeLabels
+  clientSecret: string
   onSuccess: () => void
 }) {
   const stripe = useStripe()
@@ -206,9 +208,15 @@ function PaymentForm({
 export function StripeCheckoutModal({ plan, modelName, colors, labels: labelsProp, deliverable, onClose }: Props) {
   const labels = labelsProp ?? DEFAULT_LABELS
   const showDeliverable = deliverable?.enabled ?? false
-  const deliverableTitle = deliverable?.title?.trim() || "Seu acesso está liberado!"
-  const deliverableDescription = deliverable?.description?.trim() || ""
-  const deliverableButtonText = deliverable?.buttonText?.trim() || "Acessar conteúdo"
+  const browserLanguage = typeof navigator !== "undefined" ? navigator.language.toLowerCase() : "en"
+  const localizedDeliverable = browserLanguage.startsWith("pt")
+    ? { title: "Pagamento aprovado!", description: "Seu acesso foi liberado.", button: "Acessar conteúdo" }
+    : browserLanguage.startsWith("es")
+      ? { title: "¡Pago aprobado!", description: "Tu acceso ha sido liberado.", button: "Acceder al contenido" }
+      : { title: "Payment approved!", description: "Your access has been unlocked.", button: "Access content" }
+  const deliverableTitle = deliverable?.title?.trim() || localizedDeliverable.title
+  const deliverableDescription = deliverable?.description?.trim() || localizedDeliverable.description
+  const deliverableButtonText = deliverable?.buttonText?.trim() || localizedDeliverable.button
   const deliverableButtonUrl = deliverable?.buttonUrl?.trim() || ""
   const [step, setStep] = useState<"email" | "pay" | "success">("email")
   const [email, setEmail] = useState("")
@@ -234,7 +242,7 @@ export function StripeCheckoutModal({ plan, modelName, colors, labels: labelsPro
       const res = await fetch("/api/stripe/create-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: plan.id, email: email.trim() }),
+        body: JSON.stringify({ planId: plan.id, email: email.trim(), modelName }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -343,7 +351,13 @@ export function StripeCheckoutModal({ plan, modelName, colors, labels: labelsPro
                 },
               }}
             >
-              <PaymentForm colors={colors} plan={plan} labels={labels} onSuccess={() => setStep("success")} />
+              <PaymentForm
+                colors={colors}
+                plan={plan}
+                labels={labels}
+                clientSecret={clientSecret}
+                onSuccess={() => setStep("success")}
+              />
             </Elements>
           )}
 
