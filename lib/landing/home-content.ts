@@ -127,7 +127,7 @@ export const HOME_DEFAULT: HomeContent = {
     tiktok: "disabled",
   },
   subscriptions: [
-    { id: "1", name: "1 mês", price: "R$ 19,90", badge: "Mais popular" },
+    { id: "1", name: "2 meses", price: "R$ 19,90", badge: "Mais popular" },
     { id: "2", name: "3 meses", price: "R$ 49,90", discount: "-16%" },
     { id: "3", name: "6 meses", price: "R$ 89,90", discount: "-25%" },
   ],
@@ -168,7 +168,11 @@ export function mergeHomeContent(override: Partial<HomeContent> | null | undefin
     socialLinks: { ...d.socialLinks, ...(override.socialLinks ?? {}) },
     posts: Array.isArray(override.posts) ? override.posts : d.posts,
     medias: Array.isArray(override.medias) ? override.medias : d.medias,
-    subscriptions: Array.isArray(override.subscriptions) ? override.subscriptions : d.subscriptions,
-    checkout: { ...d.checkout, ...(override.checkout ?? {}) },
+  // O plano principal da Geovanna Nescau é sempre de 2 meses.
+  // Normaliza overrides antigos do painel que ainda possam estar salvos como "1 mês".
+  subscriptions: (Array.isArray(override.subscriptions) ? override.subscriptions : d.subscriptions).map((subscription, index) =>
+    index === 0 ? { ...subscription, name: "2 meses" } : subscription,
+  ),
+  checkout: { ...d.checkout, ...(override.checkout ?? {}) },
   }
 }
