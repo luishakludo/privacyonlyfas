@@ -288,6 +288,8 @@ export function DiscountOfferPage({
         <StripeCheckoutModal
           plan={plan}
           modelName={username}
+          downsell
+
           colors={colors}
           labels={data.stripeLabels}
           deliverable={{

@@ -18,8 +18,10 @@ export async function POST(req: Request) {
 
     const body = await req.json().catch(() => ({}))
     const rawPlanId = String(body?.planId ?? "")
-    // A página principal pode carregar dados legados com id "1"; ele nunca é downsell.
-    const planId = rawPlanId === "1" ? "1m" : rawPlanId
+    const isDownsell = body?.downsell === true
+    // O preço promocional só pode ser usado pelo fluxo explícito de downsell.
+    // Qualquer pedido legado/ambíguo com "offer" volta ao plano principal de $9.
+    const planId = rawPlanId === "1" || (rawPlanId === "offer" && !isDownsell) ? "1m" : rawPlanId
     const email = typeof body?.email === "string" ? body.email.trim() : ""
     const modelName = typeof body?.modelName === "string" ? body.modelName.trim() : ""
     const flow = modelName.toLowerCase().includes("pierre") ? "gpen-en" : "other"

@@ -57,6 +57,7 @@ type Props = {
   colors: Colors
   labels?: StripeLabels
   deliverable?: Deliverable
+  downsell?: boolean
   onClose: () => void
 }
 
@@ -205,7 +206,7 @@ function PaymentForm({
   )
 }
 
-export function StripeCheckoutModal({ plan, modelName, colors, labels: labelsProp, deliverable, onClose }: Props) {
+export function StripeCheckoutModal({ plan, modelName, colors, labels: labelsProp, deliverable, downsell = false, onClose }: Props) {
   const labels = labelsProp ?? DEFAULT_LABELS
   const showDeliverable = deliverable?.enabled ?? false
   const browserLanguage = typeof navigator !== "undefined" ? navigator.language.toLowerCase() : "en"
@@ -242,7 +243,7 @@ export function StripeCheckoutModal({ plan, modelName, colors, labels: labelsPro
       const res = await fetch("/api/stripe/create-subscription", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: plan.id, email: email.trim(), modelName }),
+        body: JSON.stringify({ planId: plan.id, email: email.trim(), modelName, downsell }),
       })
       const data = await res.json()
       if (!res.ok) {
