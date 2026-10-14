@@ -24,10 +24,17 @@ export async function POST(req: Request) {
     const deliverableUrl = flow === "gpen-en" ? "https://t.me/+UxuYArZGWiBjNjAx" : ""
 
     // O preço vem SEMPRE do servidor a partir do id do plano (nunca do cliente)
-    const plan = getStripePlan(planId)
-    if (!plan) {
+    const basePlan = getStripePlan(planId === "offer" ? "1m" : planId)
+    if (!basePlan) {
       return NextResponse.json({ error: "Plano inválido." }, { status: 400 })
     }
+
+    // O plano principal de 1 mês custa $9. O identificador "offer" existe
+    // exclusivamente na página de downsell, onde a oferta pode custar $5.
+    const plan =
+      planId === "offer"
+        ? { ...basePlan, id: "offer", amountCents: 500, productName: `${basePlan.productName} — Downsell` }
+        : basePlan
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "E-mail inválido." }, { status: 400 })
     }

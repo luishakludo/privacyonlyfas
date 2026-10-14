@@ -16,7 +16,7 @@ export const STRIPE_PLANS: Record<string, StripePlan> = {
     id: "1m",
     name: "1 Month",
     productName: "Subscription — 1 Month",
-    amountCents: 500, // $5.00
+    amountCents: 900, // $9.00
     intervalCount: 1,
   },
   "3m": {
