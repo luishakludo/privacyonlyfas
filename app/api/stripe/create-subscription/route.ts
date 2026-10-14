@@ -19,9 +19,12 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}))
     const rawPlanId = String(body?.planId ?? "")
     const isDownsell = body?.downsell === true
-    // O preço promocional só pode ser usado pelo fluxo explícito de downsell.
-    // Qualquer pedido legado/ambíguo com "offer" volta ao plano principal de $9.
-    const planId = rawPlanId === "1" || (rawPlanId === "offer" && !isDownsell) ? "1m" : rawPlanId
+
+    // Fluxos separados: a página principal só aceita IDs de plano oficiais;
+    // o preço de $5 só existe quando a página de downsell envia explicitamente
+    // planId="offer" e downsell=true.
+    const isExplicitDownsell = rawPlanId === "offer" && isDownsell
+    const planId = rawPlanId === "1" ? "1m" : isExplicitDownsell ? "offer" : rawPlanId
     const email = typeof body?.email === "string" ? body.email.trim() : ""
     const modelName = typeof body?.modelName === "string" ? body.modelName.trim() : ""
     const flow = modelName.toLowerCase().includes("pierre") ? "gpen-en" : "other"
@@ -33,12 +36,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Plano inválido." }, { status: 400 })
     }
 
-    // O plano principal de 1 mês custa $9. O identificador "offer" existe
-    // exclusivamente na página de downsell, onde a oferta pode custar $5.
-    const plan =
-      planId === "offer"
-        ? { ...basePlan, id: "offer", amountCents: 500, productName: `${basePlan.productName} — Downsell` }
-        : basePlan
+    // O plano principal de 1 mês é sempre $9. O $5 fica restrito ao downsell.
+    const plan = isExplicitDownsell
+      ? { ...basePlan, id: "offer", amountCents: 500, productName: `${basePlan.productName} — Downsell` }
+      : basePlan
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: "E-mail inválido." }, { status: 400 })
     }

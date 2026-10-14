@@ -775,6 +775,7 @@ export function OnlyFansPage({
           modelName={username}
           colors={colors}
           labels={data.stripeLabels}
+          downsell={false}
           deliverable={{
             enabled: checkoutCopy.deliverableEnabled ?? false,
             title: checkoutCopy.deliverableTitle ?? "Seu acesso está liberado!",
