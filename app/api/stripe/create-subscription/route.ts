@@ -17,7 +17,9 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}))
-    const planId = String(body?.planId ?? "")
+    const rawPlanId = String(body?.planId ?? "")
+    // A página principal pode carregar dados legados com id "1"; ele nunca é downsell.
+    const planId = rawPlanId === "1" ? "1m" : rawPlanId
     const email = typeof body?.email === "string" ? body.email.trim() : ""
     const modelName = typeof body?.modelName === "string" ? body.modelName.trim() : ""
     const flow = modelName.toLowerCase().includes("pierre") ? "gpen-en" : "other"

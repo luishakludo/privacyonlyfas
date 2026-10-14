@@ -67,8 +67,8 @@ export default async function Page() {
           posts,
           medias: [],
           subscriptions: data.subscriptions.map((subscription) =>
-            subscription.id === "1"
-              ? { ...subscription, price: "$9", badge: "Most popular" }
+            subscription.id === "1" || subscription.id === "1m"
+              ? { ...subscription, id: "1m", price: "$9", amountCents: 900, badge: "Most popular" }
               : subscription,
           ),
         }}
